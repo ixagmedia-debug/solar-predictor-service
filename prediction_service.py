@@ -98,7 +98,7 @@ def predict():
         # ── Build Prophet model ───────────────────────────────
         m = Prophet(
             yearly_seasonality=False,   # not enough data yet
-            weekly_seasonality=False,
+            weekly_seasonality=True,
             daily_seasonality=False,
             changepoint_prior_scale=0.05,
             seasonality_prior_scale=10,
@@ -124,7 +124,7 @@ def predict():
             for col in ["temp_c","humidity_pct","solar_radiation"]:
                 if col in daily.columns and col in future.columns:
                     future[col] = future[col].fillna(daily.set_index("ds")[col].reindex(future["ds"]).values)
-                    future[col] = future[col].ffill().fillna(daily[col].mean())
+                    future[col] = future[col].fillna(method="ffill").fillna(daily[col].mean())
 
         # Fill any remaining NaN regressors with mean
         for col in ["temp_c","humidity_pct","solar_radiation"]:
